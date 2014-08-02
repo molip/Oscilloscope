@@ -1,4 +1,4 @@
-uunsigned long _samples, _start;
+unsigned long _samples, _start;
 
 void setup() 
 { 
@@ -20,8 +20,8 @@ void loop()
     _start = now;
 
 //  int period = 173; // 5780 Hz
-//  int period = 160; // 6250 Hz
-    int period = 150; // 6667 Hz
+  int period = 160; // 6250 Hz
+//    int period = 150; // 6667 Hz
 
   if (now - _start >= _samples * period) 
   {
