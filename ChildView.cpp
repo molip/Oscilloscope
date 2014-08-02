@@ -22,6 +22,7 @@ END_MESSAGE_MAP()
 
 CChildView::CChildView() : _offset(0), _trigger(false), _zoom(1024)
 {
+	UpdateDivsPerSecond();
 }
 
 CChildView::~CChildView()
@@ -58,33 +59,38 @@ void CChildView::OnPaint()
 	CRect rect;
 	GetClientRect(rect);
 
-	CPen pen1(PS_SOLID, 1, 0xc0c0c0);
-	dc.SelectObject(pen1);
-
 	CRect updateRect;
 	dc.GetClipBox(&updateRect);
 
+	CPen lightPen(PS_SOLID, 1, 0xc0c0c0);
+	CPen darkPen(PS_SOLID, 1, 0x808080);
+
 	// Draw all divs, not just ones in updateRect, so div positions are identical for timer redraws and window redraws. 
 	const double samplesPerDiv = Serial::GetSampleFrequency() / double(GetDivsPerSecond());
-	double div = samplesPerDiv * long(DevToLog(0) / samplesPerDiv);
-	long divPos = LogToDev(div);
+	long divIndex = long(DevToLog(0) / samplesPerDiv);
+	
+	double divSamples = samplesPerDiv * divIndex;
+	long divPos = LogToDev(divSamples);
 	while (divPos < updateRect.right)
 	{
 		if (divPos >= updateRect.left)
 		{
+			dc.SelectObject(divIndex % 10 ? lightPen : darkPen);
+
 			dc.MoveTo(divPos, rect.top);
 			dc.LineTo(divPos, rect.bottom);
 		}
 
-		div += samplesPerDiv;
-		divPos = LogToDev(div);
+		divSamples = samplesPerDiv * ++divIndex;
+		divPos = LogToDev(divSamples);
 	}
 
 	rect.DeflateRect(0, 10);
 
-	for (int v = 0; v <= 5; ++v)
+	for (int v = 0; v <= 50; ++v)
 	{
-		int y = rect.bottom - int(rect.Height() * v / 5.0);
+		dc.SelectObject(v % 10 ? lightPen : darkPen);
+		int y = rect.bottom - int(rect.Height() * v / 50.0);
 		dc.MoveTo(updateRect.left, y);
 		dc.LineTo(updateRect.right, y);
 	}
@@ -113,7 +119,7 @@ void CChildView::Zoom(int steps)
 {
 	if (steps == -1)
 	{
-		if (_zoom > 1)
+		if (_zoom > 4)
 		{
 			_zoom /= 2;
 			_offset /= 2;
@@ -124,22 +130,32 @@ void CChildView::Zoom(int steps)
 		_zoom *= 2;
 		_offset *= 2;
 	}
+
+	UpdateDivsPerSecond();
+
 	Invalidate();
 }
 
-int CChildView::GetPixelsPerSecond() const
+void CChildView::UpdateDivsPerSecond()
 {
-	return _zoom;
+	if (_zoom < 64)
+		_divsPerSecond = 1;
+	else if (_zoom < 512)
+		_divsPerSecond = 10;
+	else if (_zoom < 4096)
+		_divsPerSecond = 100;
+	else
+		_divsPerSecond = 1000;
 }
 
 int CChildView::GetDivsPerSecond() const
 {
-	return _zoom <= 4096 ? 1 : 1000;
+	return _divsPerSecond;
 }
 
 double CChildView::GetSamplesPerPixel() const
 {
-	return Serial::GetSampleFrequency() / double(GetPixelsPerSecond());
+	return Serial::GetSampleFrequency() / double(_zoom);
 }
 
 void CChildView::Reset()
