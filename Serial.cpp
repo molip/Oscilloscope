@@ -36,20 +36,17 @@ bool Serial::Open()
 		return false;
 
 	HANDLE file = CreateFile(L"COM6", GENERIC_READ, 0, nullptr, OPEN_EXISTING, 0, nullptr);
-	if (!file)
+	if (!file || file == INVALID_HANDLE_VALUE)
 	{
 		AfxMessageBox(L"CreateFile failed");
 		return false;
 	}
-	DCB config;
-	if (!GetCommState(file, &config))
-	{
-		AfxMessageBox(L"GetCommState failed");
-		return false;
-	}
-	//config.BaudRate = 9600;
-	//config.BaudRate = 115200;
-	if (!SetCommState(file, &config))
+	DCB dcb;
+	::memset(&dcb, 0, sizeof dcb);
+	dcb.fBinary = true;
+	dcb.BaudRate = 115200;
+	dcb.ByteSize = 8;
+	if (!SetCommState(file, &dcb))
 	{
 		AfxMessageBox(L"SetCommState failed");
 		return false;
