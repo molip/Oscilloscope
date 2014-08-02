@@ -26,8 +26,8 @@ Serial::~Serial()
 int Serial::GetSampleFrequency()
 {
 	//return 5780; // 173us
-	//return 6250; // 160us
-	return 6667; // 150us
+	return 6250; // 160us
+	//return 6667; // 150us
 }
 
 bool Serial::Open()
