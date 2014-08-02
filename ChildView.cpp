@@ -20,7 +20,7 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 	ON_WM_PAINT()
 END_MESSAGE_MAP()
 
-CChildView::CChildView() : _offset(0), _trigger(true), _zoom(1024)
+CChildView::CChildView() : _offset(0), _trigger(false), _zoom(1024)
 {
 }
 
