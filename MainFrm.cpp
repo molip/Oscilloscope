@@ -84,8 +84,6 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	EnableDocking(CBRS_ALIGN_ANY);
 	DockControlBar(&m_wndToolBar);
 
-	_serial.Open();
-
 	SetTimer(1, 100, nullptr);
 
 	return 0;
