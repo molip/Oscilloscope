@@ -26,6 +26,7 @@ public:
 	Sample GetSample(size_t i) const;
 	SampleVec HarvestSamples(Sample::value_t& minVal, Sample::value_t& maxVal);
 	double GetTemporalError() const;
+	double GetFrequency() const { return _frequency; }
 
 	static int GetSampleFrequency();
 
@@ -46,4 +47,8 @@ private:
 	short _unpack;
 	size_t _unpacked;
 	Sample::value_t _minVal, _maxVal;
+
+	size_t _lastThresholdCross;
+	double _frequency;
+	bool _beenDown;
 };

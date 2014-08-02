@@ -106,6 +106,9 @@ void Serial::ResetSamples()
 	_sampleCount = 0;
 	_minVal = 1023;
 	_maxVal = 0;
+	_lastThresholdCross = 0;
+	_frequency = 0;
+	_beenDown = false;
 }
 
 void Serial::Go()
@@ -184,13 +187,27 @@ size_t Serial::ReadSamples(DWORD bytesRead)
 				if (_sampleCount == MaxSampleCount)
 					ResetSamples();
 
-				_samples[_sampleCount++] = Sample{ value };
-
 				if (_minVal > value)
 					_minVal = value;
 
 				if (_maxVal < value)
 					_maxVal = value;
+
+				Serial::Sample::value_t threshold = _minVal + (_maxVal - _minVal) / 2;
+
+				if (_sampleCount)
+				{
+					if (_samples[_sampleCount - 1].value >= threshold && value < threshold)
+						_beenDown = true;
+					else if (_beenDown && _samples[_sampleCount - 1].value < threshold && value >= threshold)
+					{
+						if (_lastThresholdCross)
+							_frequency = GetSampleFrequency() / double(_sampleCount - _lastThresholdCross);
+
+						_lastThresholdCross = _sampleCount;
+					}
+				}
+				_samples[_sampleCount++] = Sample{ value };
 			}
 		}
 	}

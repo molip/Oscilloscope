@@ -20,7 +20,7 @@ BEGIN_MESSAGE_MAP(CChildView, CWnd)
 	ON_WM_PAINT()
 END_MESSAGE_MAP()
 
-CChildView::CChildView() : _offset(0), _trigger(true)
+CChildView::CChildView() : _offset(0), _trigger(true), _zoom(1024)
 {
 }
 
@@ -65,7 +65,7 @@ void CChildView::OnPaint()
 	dc.GetClipBox(&updateRect);
 
 	// Draw all divs, not just ones in updateRect, so div positions are identical for timer redraws and window redraws. 
-	const double samplesPerDiv = Serial::GetSampleFrequency() / GetDivsPerSecond();
+	const double samplesPerDiv = Serial::GetSampleFrequency() / double(GetDivsPerSecond());
 	double div = samplesPerDiv * long(DevToLog(0) / samplesPerDiv);
 	long divPos = LogToDev(div);
 	while (divPos < updateRect.right)
@@ -109,19 +109,37 @@ void CChildView::OnPaint()
 	dc.SelectStockObject(NULL_PEN);
 }
 
-double CChildView::GetPixelsPerSecond() const
+void CChildView::Zoom(int steps)
 {
-	return 10000;
+	if (steps == -1)
+	{
+		if (_zoom > 1)
+		{
+			_zoom /= 2;
+			_offset /= 2;
+		}
+	}
+	else if (steps == 1)
+	{
+		_zoom *= 2;
+		_offset *= 2;
+	}
+	Invalidate();
 }
 
-double CChildView::GetDivsPerSecond() const
+int CChildView::GetPixelsPerSecond() const
 {
-	return 1000;
+	return _zoom;
+}
+
+int CChildView::GetDivsPerSecond() const
+{
+	return _zoom <= 4096 ? 1 : 1000;
 }
 
 double CChildView::GetSamplesPerPixel() const
 {
-	return Serial::GetSampleFrequency() / GetPixelsPerSecond();
+	return Serial::GetSampleFrequency() / double(GetPixelsPerSecond());
 }
 
 void CChildView::Reset()
@@ -143,7 +161,7 @@ void CChildView::Update()
 
 	if (_trigger)
 	{
-		if ((_samples.size() + newSamples.size()) / GetSamplesPerPixel() >= clientRect.Width())
+		if (_samples.size() / GetSamplesPerPixel() >= clientRect.Width())
 		{
 			Reset();
 

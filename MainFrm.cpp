@@ -24,6 +24,8 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
 	ON_COMMAND(ID_TRIGGER, &CMainFrame::OnTrigger)
 	ON_UPDATE_COMMAND_UI(ID_CONNECT, &CMainFrame::OnUpdateConnect)
 	ON_UPDATE_COMMAND_UI(ID_TRIGGER, &CMainFrame::OnUpdateTrigger)
+	ON_COMMAND(ID_ZOOMIN, &CMainFrame::OnZoomIn)
+	ON_COMMAND(ID_ZOOMOUT, &CMainFrame::OnZoomOut)
 END_MESSAGE_MAP()
 
 static UINT indicators[] =
@@ -36,7 +38,7 @@ static UINT indicators[] =
 
 CMainFrame* CMainFrame::_instance;
 
-CMainFrame::CMainFrame()
+CMainFrame::CMainFrame() : _frequency(0), _nextFrequency(DBL_MAX), _lastFrequencyUpdateTime(0)
 {
 	_instance = this;
 }
@@ -138,12 +140,29 @@ void CMainFrame::OnTimer(UINT_PTR nIDEvent)
 
 		if (_serial.IsOpen())
 		{
-			msg.Format(L"Connection open: temporal error = %.2f%%", _serial.GetTemporalError() * 100);
+			DWORD now = ::GetTickCount();
+
+			if (_lastFrequencyUpdateTime == 0)
+				_lastFrequencyUpdateTime = now;
+			else if (now > _lastFrequencyUpdateTime + 1000)
+			{
+				_lastFrequencyUpdateTime = now;
+				_frequency = _nextFrequency;
+				_nextFrequency = DBL_MAX;
+			}
+
+			_nextFrequency = min(_nextFrequency, _serial.GetFrequency());
+
+			msg.Format(L"Connection open: Temporal error = %.2f%% Frequency = %.2fHz Zoom = %d pix/s", _serial.GetTemporalError() * 100, _frequency, m_wndView.GetZoom());
 			m_wndView.Update();
 		}
 		else
+		{
+			_frequency = 0;
+			_nextFrequency = DBL_MAX;
+			_lastFrequencyUpdateTime = 0;
 			msg = L"Connection closed";
-		
+		}
 
 		m_wndStatusBar.SetPaneText(0, msg);
 	}
@@ -182,4 +201,16 @@ void CMainFrame::OnTrigger()
 void CMainFrame::OnUpdateTrigger(CCmdUI *pCmdUI)
 {
 	pCmdUI->SetCheck(m_wndView.IsTrigger());
+}
+
+
+void CMainFrame::OnZoomIn()
+{
+	m_wndView.Zoom(1);
+}
+
+
+void CMainFrame::OnZoomOut()
+{
+	m_wndView.Zoom(-1);
 }

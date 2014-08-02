@@ -54,6 +54,8 @@ public:
 private:
 	Serial _serial;
 	static CMainFrame* _instance;
+	double _frequency, _nextFrequency;
+	DWORD _lastFrequencyUpdateTime;
 
 public:
 	afx_msg void OnDestroy();
@@ -61,6 +63,8 @@ public:
 	afx_msg void OnUpdateConnect(CCmdUI *pCmdUI);
 	afx_msg void OnTrigger();
 	afx_msg void OnUpdateTrigger(CCmdUI *pCmdUI);
+	afx_msg void OnZoomIn();
+	afx_msg void OnZoomOut();
 };
 
 
