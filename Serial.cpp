@@ -23,11 +23,9 @@ Serial::~Serial()
 	delete [] _buffer;
 }
 
-int Serial::GetSampleFrequency()
+double Serial::GetSampleFrequency()
 {
-	//return 5780; // 173us
-	return 6250; // 160us
-	//return 6667; // 150us
+	return 1000000.0 / 160;
 }
 
 bool Serial::Open()
@@ -199,7 +197,7 @@ size_t Serial::ReadSamples(DWORD bytesRead)
 					else if (_beenDown && _samples[_sampleCount - 1].value < threshold && value >= threshold)
 					{
 						if (_lastThresholdCross)
-							_frequency = GetSampleFrequency() / double(_sampleCount - _lastThresholdCross);
+							_frequency = GetSampleFrequency() / (_sampleCount - _lastThresholdCross);
 
 						_lastThresholdCross = _sampleCount;
 					}
@@ -238,5 +236,5 @@ Serial::SampleVec Serial::HarvestSamples(Sample::value_t& minVal, Sample::value_
 double Serial::GetTemporalError() const
 {
 	std::lock_guard<std::mutex> lock(_chunkMutex);
-	return _lastChunkTime ? _lastChunkSamples * 1000 / double(GetSampleFrequency() * _lastChunkTime) - 1 : 0.0;
+	return _lastChunkTime ? _lastChunkSamples * 1000 / (GetSampleFrequency() * _lastChunkTime) - 1 : 0.0;
 }

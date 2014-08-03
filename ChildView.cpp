@@ -66,7 +66,7 @@ void CChildView::OnPaint()
 	CPen darkPen(PS_SOLID, 1, 0x808080);
 
 	// Draw all divs, not just ones in updateRect, so div positions are identical for timer redraws and window redraws. 
-	const double samplesPerDiv = Serial::GetSampleFrequency() / double(GetDivsPerSecond());
+	const double samplesPerDiv = Serial::GetSampleFrequency() / GetDivsPerSecond();
 	long divIndex = long(DevToLog(0) / samplesPerDiv);
 	
 	double divSamples = samplesPerDiv * divIndex;
@@ -155,7 +155,7 @@ int CChildView::GetDivsPerSecond() const
 
 double CChildView::GetSamplesPerPixel() const
 {
-	return Serial::GetSampleFrequency() / double(_zoom);
+	return Serial::GetSampleFrequency() / _zoom;
 }
 
 void CChildView::Reset()

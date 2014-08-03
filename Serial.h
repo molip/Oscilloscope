@@ -28,7 +28,7 @@ public:
 	double GetTemporalError() const;
 	double GetFrequency() const { return _frequency; }
 
-	static int GetSampleFrequency();
+	static double GetSampleFrequency();
 
 private:
 	void Go();
