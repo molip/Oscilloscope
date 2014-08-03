@@ -95,6 +95,7 @@ void CChildView::OnPaint()
 		dc.LineTo(updateRect.right, y);
 	}
 
+	CPen pen2(PS_SOLID, 2, 0xff8000);
 	dc.SelectObject(pen2);
 
 	const long firstSample = long(DevToLog(updateRect.left));
