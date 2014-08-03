@@ -216,7 +216,7 @@ Serial::Sample Serial::GetSample(size_t i) const
 	return _samples[i];
 }
 
-Serial::SampleVec Serial::HarvestSamples(Sample::value_t& minVal, Sample::value_t& maxVal)
+Serial::SampleVec Serial::HarvestSamples()
 {
 //	return Serial::SampleVec(600, Sample{ 511 });
 
@@ -226,8 +226,6 @@ Serial::SampleVec Serial::HarvestSamples(Sample::value_t& minVal, Sample::value_
 	//samples.insert(samples.begin(), _samples.begin() + first, _samples.begin() + _sampleCount);
 	Serial::SampleVec samples(_samples.begin(), _samples.begin() + _sampleCount);
 	
-	minVal = _minVal, maxVal = _maxVal;
-
 	ResetSamples();
 
 	return samples;

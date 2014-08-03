@@ -95,7 +95,6 @@ void CChildView::OnPaint()
 		dc.LineTo(updateRect.right, y);
 	}
 
-	CPen pen2(PS_SOLID, 1, 0xff8000);
 	dc.SelectObject(pen2);
 
 	const long firstSample = long(DevToLog(updateRect.left));
@@ -167,8 +166,12 @@ void CChildView::Reset()
 
 void CChildView::Update()
 {
-	Serial::Sample::value_t minVal, maxVal;
-	Serial::SampleVec newSamples = CMainFrame::Instance().GetSerial().HarvestSamples(minVal, maxVal);
+	Serial& serial = CMainFrame::Instance().GetSerial();
+
+	Serial::Sample::value_t minVal = serial.GetMinVal();
+	Serial::Sample::value_t maxVal = serial.GetMaxVal();
+
+	Serial::SampleVec newSamples = CMainFrame::Instance().GetSerial().HarvestSamples();
 
 	CRect clientRect;
 	GetClientRect(clientRect);

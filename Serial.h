@@ -24,9 +24,11 @@ public:
 	typedef std::vector<Sample> SampleVec;
 
 	Sample GetSample(size_t i) const;
-	SampleVec HarvestSamples(Sample::value_t& minVal, Sample::value_t& maxVal);
+	SampleVec HarvestSamples();
 	double GetTemporalError() const;
 	double GetFrequency() const { return _frequency; }
+	Sample::value_t GetMinVal() const { return _minVal; }
+	Sample::value_t GetMaxVal() const { return _maxVal; }
 
 	static double GetSampleFrequency();
 
