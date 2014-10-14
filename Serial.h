@@ -31,11 +31,14 @@ public:
 	Sample::value_t GetMaxVal() const { return _maxVal; }
 
 	static double GetSampleFrequency();
+	static short GetMaxValue();
 
 private:
 	void Go();
 	size_t ReadSamples(DWORD bytesRead);
 	void ResetSamples();
+	bool ProcessByte8(byte b, short& value);
+	bool ProcessByte10(byte b, short& value);
 
 	HANDLE _file;
 	mutable std::mutex _samplesMutex, _chunkMutex;

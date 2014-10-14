@@ -2,8 +2,9 @@ unsigned long _samples, _start;
 
 void setup() 
 { 
-  Serial.begin(115200);
-  tone(12, 100);
+//  Serial.begin(115200);
+  Serial.begin(57600);
+//  tone(12, 100);
 } 
 
 short _valA;

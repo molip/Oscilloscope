@@ -103,7 +103,7 @@ void CChildView::OnPaint()
 	long samplePos = LogToDev(sample);
 	while (samplePos < updateRect.right && sample < (long)_samples.size())
 	{
-		int y = rect.bottom - int((_samples[sample].value / 1023.0) * rect.Height());
+		int y = rect.bottom - int((_samples[sample].value / double(Serial::GetMaxValue())) * rect.Height());
 		if (sample == firstSample)
 			dc.MoveTo(samplePos, y);
 		else
@@ -183,7 +183,8 @@ void CChildView::Update()
 	{
 		if (_samples.size() / GetSamplesPerPixel() >= clientRect.Width())
 		{
-			Reset();
+			_samples.clear();
+			_offset = 0;
 
 			Serial::Sample::value_t threshold = minVal + (maxVal - minVal) / 2;
 

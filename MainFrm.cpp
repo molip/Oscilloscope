@@ -151,8 +151,8 @@ void CMainFrame::OnTimer(UINT_PTR nIDEvent)
 
 			_nextFrequency = min(_nextFrequency, _serial.GetFrequency());
 
-			double minVal = _serial.GetMinVal() * 5.0 / 1023.0;
-			double maxVal = _serial.GetMaxVal() * 5.0 / 1023.0;
+			double minVal = _serial.GetMinVal() * 5.0 / Serial::GetMaxValue();
+			double maxVal = _serial.GetMaxVal() * 5.0 / Serial::GetMaxValue();
 
 			msg.Format(L"Connection open: Temporal error = %.2f%% Frequency = %.2fHz Min = %.2fV Max = %.2fV Zoom = %dpix/s Grid = %ddiv/s",
 				_serial.GetTemporalError() * 100, _frequency, minVal, maxVal, m_wndView.GetZoom(), m_wndView.GetDivsPerSecond());
