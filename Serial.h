@@ -29,6 +29,7 @@ public:
 	double GetFrequency() const { return _frequency; }
 	Sample::value_t GetMinVal() const { return _minVal; }
 	Sample::value_t GetMaxVal() const { return _maxVal; }
+	std::wstring GetPortName() const;
 
 	static double GetSampleFrequency();
 	static short GetMaxValue();

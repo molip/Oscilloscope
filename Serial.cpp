@@ -37,12 +37,30 @@ short Serial::GetMaxValue()
 	return  (1 << SampleBits) - 1;
 }
 
+std::wstring Serial::GetPortName() const
+{
+	WCHAR devs[1 << 16];
+	DWORD chars = ::QueryDosDevice(nullptr, devs, 1 << 16);
+
+	for (const WCHAR* p = devs; *p;)
+	{
+		std::wstring s = p;
+		if (s.substr(0, 3) == L"COM")
+			return s;
+		p += s.length() + 1;
+	}
+	return nullptr;
+}
+
 bool Serial::Open()
 {
 	if (_file)
 		return false;
 
-	HANDLE file = CreateFile(L"\\\\.\\COM11", GENERIC_READ, 0, nullptr, OPEN_EXISTING, 0, nullptr);
+	std::wstring path = L"\\\\.\\";
+	path += GetPortName();
+		
+	HANDLE file = CreateFile(path.c_str(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, 0, nullptr);
 	if (!file || file == INVALID_HANDLE_VALUE)
 	{
 		AfxMessageBox(L"CreateFile failed");
