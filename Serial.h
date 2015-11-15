@@ -1,8 +1,11 @@
 #pragma once
 
+#include <algorithm>
 #include <mutex>
 #include <thread>
 #include <vector>
+
+#undef min
 
 class Serial
 {
@@ -27,7 +30,7 @@ public:
 	SampleVec HarvestSamples();
 	double GetTemporalError() const;
 	double GetFrequency() const { return _frequency; }
-	Sample::value_t GetMinVal() const { return _minVal; }
+	Sample::value_t GetMinVal() const { return std::min(_minVal, _maxVal); }
 	Sample::value_t GetMaxVal() const { return _maxVal; }
 	std::wstring GetPortName() const;
 

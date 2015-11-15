@@ -149,7 +149,7 @@ void CMainFrame::OnTimer(UINT_PTR nIDEvent)
 				_nextFrequency = DBL_MAX;
 			}
 
-			_nextFrequency = min(_nextFrequency, _serial.GetFrequency());
+			_nextFrequency = std::min(_nextFrequency, _serial.GetFrequency());
 
 			double minVal = _serial.GetMinVal() * 5.0 / Serial::GetMaxValue();
 			double maxVal = _serial.GetMaxVal() * 5.0 / Serial::GetMaxValue();
