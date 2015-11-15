@@ -32,7 +32,7 @@ double Serial::GetSampleFrequency()
 	return 1000000.0 / SamplePeriod;
 }
 
-short Serial::GetMaxValue()
+WORD Serial::GetMaxValue()
 {
 	return  (1 << SampleBits) - 1;
 }
@@ -49,7 +49,7 @@ std::wstring Serial::GetPortName() const
 			return s;
 		p += s.length() + 1;
 	}
-	return nullptr;
+	return std::wstring();
 }
 
 bool Serial::Open()
@@ -166,30 +166,30 @@ void Serial::Go()
 	}
 }
 
-bool Serial::ProcessByte8(byte b, short& value)
+bool Serial::ProcessByte8(byte b, WORD& value)
 {
 	value = b;
 	return true;
 }
 
-bool Serial::ProcessByte10(byte b, short& value)
+bool Serial::ProcessByte10(byte b, WORD& value)
 {
 	bool ok = false;
 
 	if (b & 0x80) // First byte
 	{
-		_unpack = short(b & 0x7f) << 3; // High 7.
+		_unpack = WORD(b & 0x7f) << 3; // High 7.
 		_unpacked = 1;
 		ok = true;
 	}
 	else
 	{
-		short value;
+		WORD value;
 		bool ok = false;
 		if (_unpacked == 1)
 		{
 			value = _unpack | b >> 4; // Low 3.
-			_unpack = short(b & 0xf) << 6; // High 4.
+			_unpack = WORD(b & 0xf) << 6; // High 4.
 			_unpacked = 2;
 			ok = true;
 		}
@@ -214,7 +214,7 @@ size_t Serial::ReadSamples(DWORD bytesRead)
 
 	for (size_t i = 0; i < bytesRead; ++i)
 	{
-		short value = 0;
+		WORD value = 0;
 		if (SampleBits == 10 ? ProcessByte10(_buffer[i], value) : ProcessByte8(_buffer[i], value))
 		{
 			if (_sampleCount == MaxSampleCount)

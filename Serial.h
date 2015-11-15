@@ -32,14 +32,14 @@ public:
 	std::wstring GetPortName() const;
 
 	static double GetSampleFrequency();
-	static short GetMaxValue();
+	static WORD GetMaxValue();
 
 private:
 	void Go();
 	size_t ReadSamples(DWORD bytesRead);
 	void ResetSamples();
-	bool ProcessByte8(byte b, short& value);
-	bool ProcessByte10(byte b, short& value);
+	bool ProcessByte8(byte b, WORD& value);
+	bool ProcessByte10(byte b, WORD& value);
 
 	HANDLE _file;
 	mutable std::mutex _samplesMutex, _chunkMutex;
@@ -50,7 +50,7 @@ private:
 	size_t _sampleCount;
 	int _lastChunkTime, _lastChunkSamples;
 	byte* _buffer;
-	short _unpack;
+	WORD _unpack;
 	size_t _unpacked;
 	Sample::value_t _minVal, _maxVal;
 
