@@ -37,7 +37,7 @@ WORD Serial::GetMaxValue()
 	return  (1 << SampleBits) - 1;
 }
 
-std::wstring Serial::GetPortName() const
+std::wstring Serial::FindPortName() const
 {
 	WCHAR devs[1 << 16];
 	DWORD chars = ::QueryDosDevice(nullptr, devs, 1 << 16);
@@ -58,7 +58,8 @@ bool Serial::Open()
 		return false;
 
 	std::wstring path = L"\\\\.\\";
-	path += GetPortName();
+	std::wstring portName = _portName.empty() ? FindPortName() : _portName;
+	path += portName;
 		
 	HANDLE file = CreateFile(path.c_str(), GENERIC_READ, 0, nullptr, OPEN_EXISTING, 0, nullptr);
 	if (!file || file == INVALID_HANDLE_VALUE)
@@ -101,6 +102,7 @@ bool Serial::Open()
 	_file = file;
 	_abort = false;
 	_thread = std::thread(&Serial::Go, this);
+	_portName = portName;
 
 	return true;
 }

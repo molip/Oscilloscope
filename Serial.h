@@ -32,7 +32,7 @@ public:
 	double GetFrequency() const { return _frequency; }
 	Sample::value_t GetMinVal() const { return std::min(_minVal, _maxVal); }
 	Sample::value_t GetMaxVal() const { return _maxVal; }
-	std::wstring GetPortName() const;
+	std::wstring GetPortName() const { return _portName; }
 
 	static double GetSampleFrequency();
 	static WORD GetMaxValue();
@@ -43,6 +43,7 @@ private:
 	void ResetSamples();
 	bool ProcessByte8(byte b, WORD& value);
 	bool ProcessByte10(byte b, WORD& value);
+	std::wstring FindPortName() const;
 
 	HANDLE _file;
 	mutable std::mutex _samplesMutex, _chunkMutex;
@@ -56,6 +57,7 @@ private:
 	WORD _unpack;
 	size_t _unpacked;
 	Sample::value_t _minVal, _maxVal;
+	std::wstring _portName;
 
 	size_t _lastThresholdCross;
 	double _frequency;
