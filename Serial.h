@@ -6,6 +6,7 @@
 #include <vector>
 
 #undef min
+#undef max
 
 class Serial
 {
@@ -30,8 +31,8 @@ public:
 	SampleVec HarvestSamples();
 	double GetTemporalError() const;
 	double GetFrequency() const { return _frequency; }
-	Sample::value_t GetMinVal() const { return std::min(_minVal, _maxVal); }
-	Sample::value_t GetMaxVal() const { return _maxVal; }
+	Sample::value_t GetMinVal() const { return std::min(_smoothedValRange.first, _smoothedValRange.second); }
+	Sample::value_t GetMaxVal() const { return _smoothedValRange.second; }
 	std::wstring GetPortName() const { return _portName; }
 
 	static double GetSampleFrequency();
@@ -56,8 +57,10 @@ private:
 	byte* _buffer;
 	WORD _unpack;
 	size_t _unpacked;
-	Sample::value_t _minVal, _maxVal;
 	std::wstring _portName;
+
+	using ValPair = std::pair<Sample::value_t, Sample::value_t>;
+	ValPair _valRange, _oldValRange, _smoothedValRange;
 
 	size_t _lastThresholdCross;
 	double _frequency;

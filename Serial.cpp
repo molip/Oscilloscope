@@ -128,8 +128,9 @@ bool Serial::Close()
 void Serial::ResetSamples()
 {
 	_sampleCount = 0;
-	_minVal = Serial::GetMaxValue();
-	_maxVal = 0;
+	_oldValRange = _valRange;
+	_valRange.first = Serial::GetMaxValue();
+	_valRange.second = 0;
 	_lastThresholdCross = 0;
 	_frequency = 0;
 	_beenDown = false;
@@ -222,13 +223,16 @@ size_t Serial::ReadSamples(DWORD bytesRead)
 			if (_sampleCount == MaxSampleCount)
 				ResetSamples();
 
-			if (_minVal > value)
-				_minVal = value;
+			if (_valRange.first > value)
+				_valRange.first = value;
 
-			if (_maxVal < value)
-				_maxVal = value;
+			if (_valRange.second < value)
+				_valRange.second = value;
 
-			Serial::Sample::value_t threshold = _minVal + (_maxVal - _minVal) / 2;
+			_smoothedValRange.first = std::min(_valRange.first, _oldValRange.first);
+			_smoothedValRange.second = std::max(_valRange.second, _oldValRange.second);
+
+			Serial::Sample::value_t threshold = _smoothedValRange.first + (_smoothedValRange.second - _smoothedValRange.first) / 2;
 
 			if (_sampleCount)
 			{
