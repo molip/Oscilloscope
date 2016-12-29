@@ -145,11 +145,13 @@ void CMainFrame::OnTimer(UINT_PTR nIDEvent)
 			else if (now > _lastFrequencyUpdateTime + 1000)
 			{
 				_lastFrequencyUpdateTime = now;
-				_frequency = _nextFrequency;
+				_frequency = _nextFrequency == DBL_MAX ? 0 : _nextFrequency;
 				_nextFrequency = DBL_MAX;
 			}
 
-			_nextFrequency = std::min(_nextFrequency, _serial.GetFrequency());
+			double currentFrequence = _serial.GetFrequency();
+			if (currentFrequence > 0)
+				_nextFrequency = std::min(_nextFrequency, _serial.GetFrequency());
 
 			double minVal = _serial.GetMinVal() * 5.0 / Serial::GetMaxValue();
 			double maxVal = _serial.GetMaxVal() * 5.0 / Serial::GetMaxValue();
